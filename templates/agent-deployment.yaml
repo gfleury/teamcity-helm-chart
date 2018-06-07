@@ -1,0 +1,50 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: {{ template "teamcity.fullname" . }}-agent
+  labels:
+    app: {{ template "teamcity.name" . }}-agent
+    chart: {{ template "teamcity.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.agent.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "teamcity.name" . }}-agent
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "teamcity.name" . }}-agent
+        release: {{ .Release.Name }}
+    spec:
+      volumes:
+          - name: agent-data
+            source:
+              hostDir:
+                path: /var/teamcityAgentData
+      containers:
+        - name: {{ .Chart.Name }}-agent
+          image: "{{ .Values.agent.image.repository }}:{{ .Values.agent.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: SERVER_URL
+              value: "http://{{ template "teamcity.fullname" . }}:8111"
+          volumeMounts:
+            - name:  agent-data
+              mountPath: /data/teamcity_agent/conf
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
+    {{- with .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+    {{- end }}
