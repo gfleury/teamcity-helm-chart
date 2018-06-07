@@ -21,9 +21,8 @@ spec:
     spec:
       volumes:
           - name: server-data
-            source:
-              hostDir:
-                path: /var/teamcityServerData
+            hostPath:
+              path: /var/teamcityServerData
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"

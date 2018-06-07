@@ -21,9 +21,8 @@ spec:
     spec:
       volumes:
           - name: agent-data
-            source:
-              hostDir:
-                path: /var/teamcityAgentData
+            hostPath:
+              path: /var/teamcityAgentData
       containers:
         - name: {{ .Chart.Name }}-agent
           image: "{{ .Values.agent.image.repository }}:{{ .Values.agent.image.tag }}"
