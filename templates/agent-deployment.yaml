@@ -21,8 +21,8 @@ spec:
     spec:
       volumes:
           - name: agent-data
-            hostPath:
-              path: /var/teamcityAgentData
+            persistentVolumeClaim:
+              claimName: {{ default (include "teamcity.fullname" .) }}-agent-data
       containers:
         - name: {{ .Chart.Name }}-agent
           image: "{{ .Values.agent.image.repository }}:{{ .Values.agent.image.tag }}"
@@ -34,7 +34,7 @@ spec:
             - name:  agent-data
               mountPath: /data/teamcity_agent/conf
           resources:
-{{ toYaml .Values.resources | indent 12 }}
+{{ toYaml .Values.agent.resources | indent 12 }}
     {{- with .Values.nodeSelector }}
       nodeSelector:
 {{ toYaml . | indent 8 }}

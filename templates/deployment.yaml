@@ -21,8 +21,8 @@ spec:
     spec:
       volumes:
           - name: server-data
-            hostPath:
-              path: /var/teamcityServerData
+            persistentVolumeClaim:
+              claimName: {{ default (include "teamcity.fullname" .) }}-server-data
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
